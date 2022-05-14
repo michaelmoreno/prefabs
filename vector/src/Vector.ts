@@ -36,6 +36,7 @@ export default class Vector {
     
     static subtract(...quantities: (Vector|number)[]): number {
         console.log('vectors passed: ', quantities);
+        // return new Vector(7, 7);
         return 3
     }
     static multiply(...quantities: (Vector|number)[]): Vector {
@@ -58,24 +59,18 @@ export default class Vector {
     }
 
     add(quantity: Vector | number): void {
-        console.log('fire add');
         this._x += quantity instanceof Vector ? quantity._x : quantity;
         this._y += quantity instanceof Vector ? quantity._y : quantity;
     }
     subtract(quantity: Vector | number): void {
-        console.log('fire subtract');
-        
         this._x -= quantity instanceof Vector ? quantity._x : quantity;
         this._y -= quantity instanceof Vector ? quantity._y : quantity;
     }
     multiply(quantity: Vector | number): void {
-        console.log('fire multiply');
-        
         this._x *= quantity instanceof Vector ? quantity._x : quantity;
         this._y *= quantity instanceof Vector ? quantity._y : quantity;
     }
     divide(quantity: Vector | number): void {
-        console.log('fire divide');
         this._x /= quantity instanceof Vector ? quantity._x : quantity;
         this._y /= quantity instanceof Vector ? quantity._y : quantity;
     }

@@ -38,7 +38,19 @@ const frameLoop = () => {
     console.log('created point2: ', point2);
     
     const desired = Vector.subtract(point2, point1);
+    // console.log(desired);
 
+    
+    // drawLine(point1, Vector.add(point1, desired), "red");
+
+    drawPoint(point1, "red");
+    // drawPoint(point2, "blue");
+    
+    const point3 = point1
+    point3.add(desired); // commenting out this changes the log of Vector.subtract
+    console.log(point3);
+    
+    drawPoint(point3, "green");
     
     // requestAnimationFrame(frameLoop);
 }
