@@ -17,6 +17,7 @@ const drawPoint = (point: Vector, color: string) => {
     ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
+    ctx.closePath();
 };
 
 const drawLine = (point1: Vector, point2: Vector, thickness: number, color: string) => {
@@ -28,42 +29,56 @@ const drawLine = (point1: Vector, point2: Vector, thickness: number, color: stri
     ctx.stroke();
 };
 
+class Particle {
+    position: Vector;
+    velocity: Vector;
+    acceleration: Vector;
+    maxSpeed: number;;
+    maxForce: number;
+    color: string;
+
+    constructor(position: Vector, maxSpeed: number, maxForce: number, color: string) {
+        this.position = position;
+        this.velocity = new Vector(0, 0);
+        this.acceleration = new Vector(0, 0);
+        this.maxSpeed = maxSpeed;
+        this.maxForce = maxForce;
+        this.color = color;
+    }
+    applyForce(force: Vector) {
+        this.acceleration = this.acceleration.add(force);
+    }
+    draw() {
+        drawPoint(this.position, this.color);
+    }
+    update() {
+        this.velocity = this.velocity.add(this.acceleration);
+        this.position = this.position.add(this.velocity);
+        this.acceleration = new Vector(0, 0);
+    }
+    seek(target: Vector) {
+        let desired = target.subtract(this.position);
+        desired = desired.setMagnitude(this.maxSpeed);
+        let steer = desired.subtract(this.velocity);
+        steer = steer.setMagnitude(this.maxForce);
+        this.applyForce(steer);
+    }
+}
+
+const p1 = new Particle(new Vector(0, 0), 10, 0.5, "blue");
+const p2 = new Particle(new Vector(100, -100), 10, 0.3, "red");
 
 const frameLoop = () => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const maxForce = 30
-    const maxSpeed = 60
-    const point1 = new Vector(10, -10);
-    let point1Velocity = new Vector(30, 40);
-    drawPoint(point1, "red");
-    console.log('created point1: ', point1);
-    drawLine(point1, point1.add(point1Velocity), 1, "red");
-    console.log('point1Velocity: ', point1Velocity);
-    
-    
-    const target = new Vector(100, -100);
-    drawPoint(target, "blue");
-    console.log('created target: ', target);
-
-    let desired = target.subtract(point1);
-    console.log('desired: ', desired);
-    drawLine(point1, point1.add(desired), 1, "blue");
-
-    desired = desired.limitMagnitude(maxSpeed);
-    drawLine(point1, point1.add(desired), 3, "blue");
+    ctx.clearRect(-canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
+    p1.draw();
+    p2.draw()
+    p1.seek(p2.position);
+    p1.update();
+    p2.seek(p1.position);
+    p2.update();
 
 
-    let steering = desired.subtract(point1Velocity);
-    console.log('steering: ', steering);
-    drawLine(point1, point1.add(steering), 1, "green");
-    steering = steering.limitMagnitude(maxForce);
-    drawLine(point1, point1.add(steering), 3, "green");
-    point1Velocity = point1Velocity.add(steering);
-    drawLine(point1, point1.add(point1Velocity), 3, "green");
-
-
-    // requestAnimationFrame(frameLoop);
+    requestAnimationFrame(frameLoop);
 }
 
 frameLoop();
