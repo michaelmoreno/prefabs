@@ -19,10 +19,11 @@ const drawPoint = (point: Vector, color: string) => {
     ctx.fill();
 };
 
-const drawLine = (point1: Vector, point2: Vector, color: string) => {
+const drawLine = (point1: Vector, point2: Vector, thickness: number, color: string) => {
     ctx.beginPath();
     ctx.moveTo(point1.x, point1.y);
     ctx.lineTo(point2.x, point2.y);
+    ctx.lineWidth = thickness;
     ctx.strokeStyle = color;
     ctx.stroke();
 };
@@ -31,27 +32,37 @@ const drawLine = (point1: Vector, point2: Vector, color: string) => {
 const frameLoop = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const point1 = new Vector(0, 0);
-    console.log('created point1: ', point1);
-    
-    const point2 = new Vector(100, -100);
-    console.log('created point2: ', point2);
-    
-    const desired = Vector.subtract(point2, point1);
-    // console.log(desired);
-
-    
-    // drawLine(point1, Vector.add(point1, desired), "red");
-
+    const maxForce = 30
+    const maxSpeed = 60
+    const point1 = new Vector(10, -10);
+    let point1Velocity = new Vector(30, 40);
     drawPoint(point1, "red");
-    // drawPoint(point2, "blue");
+    console.log('created point1: ', point1);
+    drawLine(point1, point1.add(point1Velocity), 1, "red");
+    console.log('point1Velocity: ', point1Velocity);
     
-    const point3 = point1
-    point3.add(desired); // commenting out this changes the log of Vector.subtract
-    console.log(point3);
     
-    drawPoint(point3, "green");
-    
+    const target = new Vector(100, -100);
+    drawPoint(target, "blue");
+    console.log('created target: ', target);
+
+    let desired = target.subtract(point1);
+    console.log('desired: ', desired);
+    drawLine(point1, point1.add(desired), 1, "blue");
+
+    desired = desired.limitMagnitude(maxSpeed);
+    drawLine(point1, point1.add(desired), 3, "blue");
+
+
+    let steering = desired.subtract(point1Velocity);
+    console.log('steering: ', steering);
+    drawLine(point1, point1.add(steering), 1, "green");
+    steering = steering.limitMagnitude(maxForce);
+    drawLine(point1, point1.add(steering), 3, "green");
+    point1Velocity = point1Velocity.add(steering);
+    drawLine(point1, point1.add(point1Velocity), 3, "green");
+
+
     // requestAnimationFrame(frameLoop);
 }
 
